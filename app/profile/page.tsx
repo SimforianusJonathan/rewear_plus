@@ -2,6 +2,10 @@
 
 import { useState } from "react"
 import Image from "next/image"
+<<<<<<< HEAD
+=======
+import Link from "next/link"
+>>>>>>> upstream/main
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
@@ -126,6 +130,7 @@ function CertificateCard() {
           <p className="text-xs text-muted-foreground mb-2">Certificate of Appreciation</p>
           <p className="font-semibold text-lg">{mockUser.name}</p>
           <p className="text-sm text-muted-foreground mt-1">
+<<<<<<< HEAD
             For contributing to sustainable fashion and community support through ReWear
           </p>
         </div>
@@ -133,6 +138,17 @@ function CertificateCard() {
           <Download className="h-4 w-4 mr-2" />
           Download Certificate
         </Button>
+=======
+            For contributing to sustainable fashion and community support through ReWear+
+          </p>
+        </div>
+        <Link href="/certificate">
+          <Button className="w-full bg-transparent" variant="outline">
+            <Download className="h-4 w-4 mr-2" />
+            View & Download Certificate
+          </Button>
+        </Link>
+>>>>>>> upstream/main
       </CardContent>
     </Card>
   )
