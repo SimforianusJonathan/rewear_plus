@@ -28,12 +28,40 @@ import { useToast } from "@/hooks/use-toast"
 import { formatPrice, calculateFees, type Product } from "@/lib/mock-data"
 import { ShoppingCart, Heart, Share2, Truck, Package, CheckCircle2, ArrowLeft, Info, HandHeart } from "lucide-react"
 
+const JABODETABEK = ["jakarta", "bogor", "depok", "tangerang", "bekasi"]
+const BASE_SHIPPING = 15000
+const DISCOUNT = 5000
+const EXPEDITIONS = ["JNE", "J&T", "Wahana", "Anteraja", "Pos Indonesia"]
+const CITIES = [
+  "Jakarta",
+  "Bogor",
+  "Depok",
+  "Tangerang",
+  "Bekasi",
+  "Bandung",
+  "Surabaya",
+  "Medan",
+  "Semarang",
+  "Yogyakarta",
+]
+
 export function ListingContent({ product }: { product: Product }) {
   const [isFavorite, setIsFavorite] = useState(false)
   const { toast } = useToast()
-
   const { sellerNet } = calculateFees(product.price)
+  const [city, setCity] = useState("")
+  const [customCity, setCustomCity] = useState("")
 
+  const [openCheckout, setOpenCheckout] = useState(false)
+  const [expedition, setExpedition] = useState("")
+
+  const selectedCity = city === "other" ? customCity : city
+  const isJabodetabek = ["jakarta", "bogor", "depok", "tangerang", "bekasi"].includes(
+    selectedCity.toLowerCase()
+  )
+
+  const shippingFee = isJabodetabek ? BASE_SHIPPING - DISCOUNT : BASE_SHIPPING
+  
   const conditionColors = {
     "like-new": "bg-green-100 text-green-800",
     good: "bg-yellow-100 text-yellow-800",
@@ -111,28 +139,113 @@ export function ListingContent({ product }: { product: Product }) {
 
           {/* Mode-specific content */}
           {product.mode === "rewear" && (
-            <>
-              <div className="space-y-4">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold">{formatPrice(product.price)}</span>
-                </div>
-                <DonationBreakdown price={product.price} showSellerNet />
-              </div>
+  <>
+    <div className="space-y-4">
+      <div className="flex items-baseline gap-2">
+        <span className="text-3xl font-bold">{formatPrice(product.price)}</span>
+      </div>
+      <DonationBreakdown price={product.price} showSellerNet />
+    </div>
 
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button size="lg" className="flex-1" onClick={handleBuy}>
-                  <ShoppingCart className="h-5 w-5 mr-2" />
-                  Buy Now
-                </Button>
-                <Button size="lg" variant="outline" onClick={() => setIsFavorite(!isFavorite)}>
-                  <Heart className={`h-5 w-5 ${isFavorite ? "fill-red-500 text-red-500" : ""}`} />
-                </Button>
-                <Button size="lg" variant="outline" onClick={handleShare}>
-                  <Share2 className="h-5 w-5" />
-                </Button>
-              </div>
-            </>
+    <div className="flex flex-col sm:flex-row gap-3">
+      <Button
+        size="lg"
+        className="flex-1"
+        onClick={() => setOpenCheckout(true)}
+      >
+        <ShoppingCart className="h-5 w-5 mr-2" />
+        Buy Now
+      </Button>
+
+      <Button size="lg" variant="outline" onClick={() => setIsFavorite(!isFavorite)}>
+        <Heart className={`h-5 w-5 ${isFavorite ? "fill-red-500 text-red-500" : ""}`} />
+      </Button>
+
+      <Button size="lg" variant="outline" onClick={handleShare}>
+        <Share2 className="h-5 w-5" />
+      </Button>
+    </div>
+
+    <Dialog open={openCheckout} onOpenChange={setOpenCheckout}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Shipping Information</DialogTitle>
+          <DialogDescription>
+            Choose delivery location and expedition
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-2">
+  <label className="text-sm font-medium">City</label>
+
+  <select
+    className="w-full border rounded-md px-3 py-2 text-sm"
+    value={city}
+    onChange={(e) => setCity(e.target.value)}
+  >
+    <option value="">Select city</option>
+    {CITIES.map((c) => (
+      <option key={c} value={c}>
+        {c}
+      </option>
+    ))}
+    <option value="other">Other</option>
+  </select>
+
+  {city === "other" && (
+    <input
+      className="w-full border rounded-md px-3 py-2 text-sm"
+      placeholder="Enter your city"
+      value={customCity}
+      onChange={(e) => setCustomCity(e.target.value)}
+    />
+  )}
+</div>
+
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Expedition</label>
+          <select
+            className="w-full border rounded-md px-3 py-2 text-sm"
+            value={expedition}
+            onChange={(e) => setExpedition(e.target.value)}
+          >
+            <option value="">Select expedition</option>
+            {EXPEDITIONS.map((exp) => (
+              <option key={exp} value={exp}>
+                {exp}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="rounded-lg border p-3 text-sm space-y-1 bg-muted/50">
+          <p>Base Shipping: {formatPrice(BASE_SHIPPING)}</p>
+          {isJabodetabek && (
+            <p className="text-green-600">
+              Jabodetabek Discount: -{formatPrice(DISCOUNT)}
+            </p>
           )}
+          <p className="font-medium">
+            Shipping Fee: {formatPrice(shippingFee)}
+          </p>
+        </div>
+
+        <Button
+          className="w-full"
+          disabled={!expedition || !city || (city === "other" && !customCity)}
+          onClick={() => {
+            setOpenCheckout(false)
+            handleBuy()
+          }}
+        >
+          Confirm & Buy
+        </Button>
+      </DialogContent>
+    </Dialog>
+  </>
+)}
+
 
           {product.mode === "dowear" && (
             <>

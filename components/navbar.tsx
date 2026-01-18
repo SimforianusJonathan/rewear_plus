@@ -36,7 +36,7 @@ export function Navbar() {
           />
           <div className="flex flex-col">
             <span className="text-xl font-bold tracking-tight leading-tight">ReWear+</span>
-            <span className="text-[10px] text-muted-foreground leading-none hidden sm:block">Wear Again, Care Again</span>
+            <span className="text-[10px] text-muted-foreground leading-none hidden sm:block">Sustainable Fashion Marketplace</span>
           </div>
         </Link>
 

@@ -36,20 +36,20 @@ export default function HomePage() {
               <Image
                 src="/rewear-logo.png"
                 alt="ReWear+ Logo"
-                width={80}
-                height={80}
+                width={250}
+                height={250}
                 className="rounded-2xl"
               />
             </div>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
-              Wear Again, Care Again
-            </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-balance">
-              Thrift. Donate. <span className="text-primary">Make Impact.</span>
+            <br></br>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-center">
+              <span className="block">Wear Again</span>
+              <span className="block mt-2 text-primary">Care Again</span>
             </h1>
+            <br></br>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto text-pretty">
               Join ReWear+ sustainable fashion movement. Buy pre-loved clothes, donate to those in need, or contribute to
-              our community fund through DoWear+.
+              our community fund through ReWear+.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/listings">

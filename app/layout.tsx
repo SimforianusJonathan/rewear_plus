@@ -10,7 +10,7 @@ const plusJakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-sa
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
 export const metadata: Metadata = {
-  title: "ReWear+ - Wear Again, Care Again",
+  title: "ReWear+ -Sustainable fashion marketplace",
   description: "Sustainable fashion marketplace. Thrift, donate, and make an impact with pre-loved clothes.",
   generator: 'v0.app'
 }
