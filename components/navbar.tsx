@@ -7,12 +7,13 @@ import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, Home, ShoppingBag, PlusCircle, Heart, User, Settings } from "lucide-react"
+import { Menu, Home, ShoppingBag, PlusCircle, Heart, User, Settings, ShoppingCart } from "lucide-react"
 import { Leaf } from "lucide-react" // Declaring the Leaf variable
 
 const navItems = [
   { href: "/", label: "Home", icon: Home },
   { href: "/listings", label: "Listings", icon: ShoppingBag },
+  { href: "/cart", label: "Cart", icon: ShoppingCart },
   { href: "/sell", label: "Sell", icon: PlusCircle },
   { href: "/donate", label: "Donate", icon: Heart },
   { href: "/profile", label: "Profile", icon: User },
