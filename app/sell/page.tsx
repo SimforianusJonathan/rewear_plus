@@ -283,18 +283,6 @@ export default function SellPage() {
               />
             </div>
 
-<<<<<<< HEAD
-            {/* Photo Upload Placeholder */}
-            <div className="space-y-2">
-              <Label>Photos</Label>
-              <div className="border-2 border-dashed rounded-lg p-8 text-center">
-                <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-4" />
-                <p className="text-sm text-muted-foreground mb-2">Drag and drop photos or click to upload</p>
-                <Button variant="outline" size="sm">
-                  Choose Files
-                </Button>
-                <p className="text-xs text-muted-foreground mt-2">Max 5 photos, 5MB each</p>
-=======
             {/* Photo Upload */}
             <div className="space-y-2">
               <Label>Photos</Label>
@@ -358,7 +346,6 @@ export default function SellPage() {
                     <p className="text-xs text-muted-foreground text-center">{formData.photos.length}/5 photos uploaded</p>
                   </div>
                 )}
->>>>>>> upstream/main
               </div>
             </div>
           </CardContent>

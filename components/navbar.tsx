@@ -1,21 +1,14 @@
 "use client"
 
 import Link from "next/link"
-<<<<<<< HEAD
-=======
 import Image from "next/image"
->>>>>>> upstream/main
 import { usePathname } from "next/navigation"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-<<<<<<< HEAD
-import { Menu, Leaf, Home, ShoppingBag, PlusCircle, Heart, User, Settings } from "lucide-react"
-=======
 import { Menu, Home, ShoppingBag, PlusCircle, Heart, User, Settings } from "lucide-react"
 import { Leaf } from "lucide-react" // Declaring the Leaf variable
->>>>>>> upstream/main
 
 const navItems = [
   { href: "/", label: "Home", icon: Home },
@@ -34,12 +27,6 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
-<<<<<<< HEAD
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <Leaf className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <span className="text-xl font-bold tracking-tight">ReWear</span>
-=======
           <Image
             src="/rewear-logo.png"
             alt="ReWear+ Logo"
@@ -51,7 +38,6 @@ export function Navbar() {
             <span className="text-xl font-bold tracking-tight leading-tight">ReWear+</span>
             <span className="text-[10px] text-muted-foreground leading-none hidden sm:block">Wear Again, Care Again</span>
           </div>
->>>>>>> upstream/main
         </Link>
 
         {/* Desktop Navigation */}
