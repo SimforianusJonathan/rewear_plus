@@ -132,7 +132,7 @@ export default function SellPage() {
   const fees = formData.price > 0 ? calculateFees(formData.price) : null
 
   return (
-    <div className="container max-w-3xl px-4 py-8">
+    <div className="container max-w-3xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Create Listing</h1>

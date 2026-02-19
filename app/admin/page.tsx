@@ -97,7 +97,7 @@ export default function AdminPage() {
   const otherListings = pendingListings.filter((p) => p.mode !== "dowear-plus")
 
   return (
-    <div className="container px-4 py-8">
+    <div className="container max-w-7xl mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
         <p className="text-muted-foreground">Manage listings, events, and platform operations</p>

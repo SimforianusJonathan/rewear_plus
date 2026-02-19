@@ -30,7 +30,7 @@ export default function HomePage() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative bg-primary/5 border-b">
-        <div className="container px-4 py-16 md:py-24">
+        <div className="container max-w-7xl mx-auto px-4 py-16 md:py-24">
           <div className="max-w-3xl mx-auto text-center">
             <div className="flex justify-center mb-6">
               <Image
@@ -38,7 +38,7 @@ export default function HomePage() {
                 alt="ReWear+ Logo"
                 width={250}
                 height={250}
-                className="rounded-2xl"
+                className="object-contain"
               />
             </div>
             <br></br>
@@ -70,7 +70,7 @@ export default function HomePage() {
       </section>
 
       {/* Search & Categories */}
-      <section className="container px-4 py-8">
+      <section className="container max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="relative w-full md:w-96">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -104,7 +104,7 @@ export default function HomePage() {
       </section>
 
       {/* Main Content */}
-      <section className="container px-4 pb-16">
+      <section className="container max-w-7xl mx-auto px-4 pb-16">
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Products Grid */}
           <div className="lg:col-span-3">

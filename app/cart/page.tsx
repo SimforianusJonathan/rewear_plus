@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
@@ -17,48 +17,38 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, CreditCard, Wallet, Building2, CheckCircle2 } from "lucide-react"
+import {
+  Trash2,
+  Plus,
+  Minus,
+  ShoppingBag,
+  ArrowLeft,
+  CreditCard,
+  Wallet,
+  Building2,
+  CheckCircle2,
+} from "lucide-react"
 import { formatPrice } from "@/lib/mock-data"
+import { useCart } from "@/hooks/use-cart"
+import { useCalendar } from "@/hooks/use-calendar"
+import { useDemoUser } from "@/hooks/use-demo-user"
+import { initStorage, readStorage, writeStorage, STORAGE_KEYS } from "@/lib/storage"
+import type { Transaction } from "@/lib/types"
 
-// Dummy cart data
-const dummyCartItems = [
-  {
-    id: "cart-1",
-    productId: "1",
-    title: "Vintage Batik Tulis Solo",
-    image: "/vintage-batik-tulis-solo-traditional-indonesian-fa.jpg",
-    price: 85000,
-    size: "M",
-    condition: "like-new",
-    quantity: 1,
-    mode: "rewear",
-  },
-  {
-    id: "cart-2",
-    productId: "2",
-    title: "Modern Kebaya Kutubaru",
-    image: "/modern-kebaya-kutubaru-indonesian-traditional-dres.jpg",
-    price: 75000,
-    size: "S",
-    condition: "good",
-    quantity: 2,
-    mode: "rewear",
-  },
-  {
-    id: "cart-3",
-    productId: "4",
-    title: "Oversized Denim Jacket",
-    image: "/oversized-denim-jacket-vintage-streetwear.jpg",
-    price: 65000,
-    size: "L",
-    condition: "good",
-    quantity: 1,
-    mode: "rewear",
-  },
-]
+const conditionColors: Record<string, string> = {
+  "like-new": "bg-green-100 text-green-800",
+  good: "bg-yellow-100 text-yellow-800",
+  fair: "bg-orange-100 text-orange-800",
+}
+
+const modeColors: Record<string, string> = {
+  rewear: "bg-blue-100 text-blue-800",
+  dowear: "bg-green-100 text-green-800",
+  "dowear-plus": "bg-orange-100 text-orange-800",
+}
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState(dummyCartItems)
+  const [initialized, setInitialized] = useState(false)
   const [showCheckout, setShowCheckout] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState("bank-transfer")
@@ -70,57 +60,60 @@ export default function CartPage() {
     postalCode: "",
   })
 
-  const updateQuantity = (id: string, delta: number) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-          : item
-      )
-    )
-  }
+  const { cartItems, removeFromCart, updateQuantity, clearCart, subtotal, shippingFee, total } =
+    useCart()
+  const { recordTransaction } = useCalendar()
+  const { currentUser } = useDemoUser()
 
-  const removeItem = (id: string) => {
-    setCartItems((items) => items.filter((item) => item.id !== id))
-  }
-
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const shippingFee = 25000
-  const total = subtotal + shippingFee
-
-  const conditionColors: Record<string, string> = {
-    "like-new": "bg-green-100 text-green-800",
-    good: "bg-yellow-100 text-yellow-800",
-    fair: "bg-orange-100 text-orange-800",
-  }
-
-  const modeColors: Record<string, string> = {
-    rewear: "bg-blue-100 text-blue-800",
-    upwear: "bg-purple-100 text-purple-800",
-    dowear: "bg-green-100 text-green-800",
-  }
+  useEffect(() => {
+    initStorage()
+    setInitialized(true)
+  }, [])
 
   const handleCheckout = () => {
+    cartItems.forEach((item) => {
+      const tx: Transaction = {
+        id: `t-${Date.now()}-${item.productId}`,
+        productId: item.productId,
+        productTitle: item.title,
+        productImage: item.image,
+        buyerId: currentUser.id,
+        buyerName: currentUser.name,
+        sellerId: item.sellerId,
+        sellerName: item.sellerName,
+        price: item.price,
+        shippingFee: 0,
+        total: item.price * item.quantity,
+        status: "completed",
+        date: new Date().toISOString().split("T")[0],
+        reviewed: false,
+      }
+      const allTx = readStorage<Transaction[]>(STORAGE_KEYS.TRANSACTIONS, [])
+      writeStorage(STORAGE_KEYS.TRANSACTIONS, [...allTx, tx])
+      recordTransaction(tx)
+    })
+
     setShowCheckout(false)
     setShowSuccess(true)
-    // Reset form
+
     setTimeout(() => {
       setShowSuccess(false)
-      setCartItems([])
-      setFormData({
-        name: "",
-        phone: "",
-        address: "",
-        city: "",
-        postalCode: "",
-      })
+      clearCart()
+      setFormData({ name: "", phone: "", address: "", city: "", postalCode: "" })
     }, 3000)
+  }
+
+  if (!initialized) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">
+        Memuat...
+      </div>
+    )
   }
 
   return (
     <div className="min-h-screen bg-background">
       <div className="container px-4 py-8 max-w-7xl mx-auto">
-        {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link href="/listings">
             <Button variant="ghost" size="icon">
@@ -150,23 +143,15 @@ export default function CartPage() {
           </Card>
         ) : (
           <div className="grid lg:grid-cols-3 gap-8">
-            {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
               {cartItems.map((item) => (
                 <Card key={item.id}>
                   <CardContent className="p-4">
                     <div className="flex gap-4">
-                      {/* Product Image */}
                       <div className="relative w-24 h-24 sm:w-32 sm:h-32 shrink-0 rounded-lg overflow-hidden bg-muted">
-                        <Image
-                          src={item.image}
-                          alt={item.title}
-                          fill
-                          className="object-cover"
-                        />
+                        <Image src={item.image} alt={item.title} fill className="object-cover" />
                       </div>
 
-                      {/* Product Details */}
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between gap-2 mb-2">
                           <Link
@@ -179,24 +164,20 @@ export default function CartPage() {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 shrink-0"
-                            onClick={() => removeItem(item.id)}
+                            onClick={() => removeFromCart(item.id)}
                           >
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         </div>
 
-                        {/* Badges */}
                         <div className="flex flex-wrap gap-2 mb-3">
-                          <Badge
-                            variant="secondary"
-                            className={modeColors[item.mode]}
-                          >
+                          <Badge variant="secondary" className={modeColors[item.mode] ?? ""}>
                             {item.mode.toUpperCase()}
                           </Badge>
                           <Badge variant="secondary">Size {item.size}</Badge>
                           <Badge
                             variant="secondary"
-                            className={conditionColors[item.condition]}
+                            className={conditionColors[item.condition] ?? ""}
                           >
                             {item.condition === "like-new"
                               ? "Like New"
@@ -205,17 +186,14 @@ export default function CartPage() {
                           </Badge>
                         </div>
 
-                        {/* Price and Quantity */}
                         <div className="flex items-center justify-between flex-wrap gap-3">
-                          <p className="text-lg font-bold">
-                            {formatPrice(item.price)}
-                          </p>
+                          <p className="text-lg font-bold">{formatPrice(item.price)}</p>
                           <div className="flex items-center gap-2">
                             <Button
                               variant="outline"
                               size="icon"
                               className="h-8 w-8"
-                              onClick={() => updateQuantity(item.id, -1)}
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
                             >
                               <Minus className="h-3 w-3" />
                             </Button>
@@ -229,12 +207,15 @@ export default function CartPage() {
                               variant="outline"
                               size="icon"
                               className="h-8 w-8"
-                              onClick={() => updateQuantity(item.id, 1)}
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
                             >
                               <Plus className="h-3 w-3" />
                             </Button>
                           </div>
                         </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Penjual: {item.sellerName}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -242,12 +223,10 @@ export default function CartPage() {
               ))}
             </div>
 
-            {/* Order Summary */}
             <div className="lg:col-span-1">
               <Card className="sticky top-20">
                 <CardContent className="p-6">
                   <h2 className="text-xl font-bold mb-6">Order Summary</h2>
-
                   <div className="space-y-3 mb-6">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Subtotal</span>
@@ -266,9 +245,8 @@ export default function CartPage() {
                       </div>
                     </div>
                   </div>
-
-                  <Button 
-                    className="w-full mb-3" 
+                  <Button
+                    className="w-full mb-3"
                     size="lg"
                     onClick={() => setShowCheckout(true)}
                   >
@@ -279,10 +257,9 @@ export default function CartPage() {
                       Continue Shopping
                     </Button>
                   </Link>
-
                   <div className="mt-6 p-4 bg-muted rounded-lg">
                     <p className="text-xs text-muted-foreground text-center">
-                      🌿 Shopping sustainably helps reduce fashion waste
+                      Berbelanja secara berkelanjutan membantu mengurangi limbah fashion
                     </p>
                   </div>
                 </CardContent>
@@ -297,14 +274,12 @@ export default function CartPage() {
             <DialogHeader>
               <DialogTitle>Checkout</DialogTitle>
               <DialogDescription>
-                Complete your order by filling in the details below
+                Lengkapi detail pengiriman untuk menyelesaikan pesanan
               </DialogDescription>
             </DialogHeader>
-
             <div className="space-y-6">
-              {/* Order Summary in Dialog */}
               <div className="bg-muted p-4 rounded-lg space-y-2">
-                <h3 className="font-semibold mb-3">Order Summary</h3>
+                <h3 className="font-semibold mb-3">Ringkasan Pesanan</h3>
                 {cartItems.map((item) => (
                   <div key={item.id} className="flex justify-between text-sm">
                     <span className="text-muted-foreground">
@@ -331,37 +306,32 @@ export default function CartPage() {
                 </div>
               </div>
 
-              {/* Shipping Information */}
               <div className="space-y-4">
-                <h3 className="font-semibold">Shipping Information</h3>
+                <h3 className="font-semibold">Informasi Pengiriman</h3>
                 <div className="grid gap-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="name">Full Name</Label>
+                    <Label htmlFor="name">Nama Lengkap</Label>
                     <Input
                       id="name"
-                      placeholder="Enter your full name"
+                      placeholder="Masukkan nama lengkap"
                       value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="phone">Phone Number</Label>
+                    <Label htmlFor="phone">Nomor Telepon</Label>
                     <Input
                       id="phone"
                       placeholder="08xx xxxx xxxx"
                       value={formData.phone}
-                      onChange={(e) =>
-                        setFormData({ ...formData, phone: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="address">Address</Label>
+                    <Label htmlFor="address">Alamat</Label>
                     <Textarea
                       id="address"
-                      placeholder="Enter your complete address"
+                      placeholder="Masukkan alamat lengkap"
                       rows={3}
                       value={formData.address}
                       onChange={(e) =>
@@ -371,10 +341,10 @@ export default function CartPage() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                      <Label htmlFor="city">City</Label>
+                      <Label htmlFor="city">Kota</Label>
                       <Input
                         id="city"
-                        placeholder="City"
+                        placeholder="Kota"
                         value={formData.city}
                         onChange={(e) =>
                           setFormData({ ...formData, city: e.target.value })
@@ -382,16 +352,13 @@ export default function CartPage() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="postalCode">Postal Code</Label>
+                      <Label htmlFor="postalCode">Kode Pos</Label>
                       <Input
                         id="postalCode"
                         placeholder="12345"
                         value={formData.postalCode}
                         onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            postalCode: e.target.value,
-                          })
+                          setFormData({ ...formData, postalCode: e.target.value })
                         }
                       />
                     </div>
@@ -399,9 +366,8 @@ export default function CartPage() {
                 </div>
               </div>
 
-              {/* Payment Method */}
               <div className="space-y-4">
-                <h3 className="font-semibold">Payment Method</h3>
+                <h3 className="font-semibold">Metode Pembayaran</h3>
                 <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
                   <div className="flex items-center space-x-3 border rounded-lg p-4 cursor-pointer hover:bg-muted">
                     <RadioGroupItem value="bank-transfer" id="bank-transfer" />
@@ -411,10 +377,8 @@ export default function CartPage() {
                     >
                       <Building2 className="h-5 w-5 text-muted-foreground" />
                       <div>
-                        <p className="font-medium">Bank Transfer</p>
-                        <p className="text-sm text-muted-foreground">
-                          BCA, Mandiri, BNI
-                        </p>
+                        <p className="font-medium">Transfer Bank</p>
+                        <p className="text-sm text-muted-foreground">BCA, Mandiri, BNI</p>
                       </div>
                     </Label>
                   </div>
@@ -441,24 +405,21 @@ export default function CartPage() {
                     >
                       <CreditCard className="h-5 w-5 text-muted-foreground" />
                       <div>
-                        <p className="font-medium">Credit/Debit Card</p>
-                        <p className="text-sm text-muted-foreground">
-                          Visa, Mastercard, JCB
-                        </p>
+                        <p className="font-medium">Kartu Kredit/Debit</p>
+                        <p className="text-sm text-muted-foreground">Visa, Mastercard, JCB</p>
                       </div>
                     </Label>
                   </div>
                 </RadioGroup>
               </div>
 
-              {/* Action Buttons */}
               <div className="flex gap-3 pt-4">
                 <Button
                   variant="outline"
                   className="flex-1"
                   onClick={() => setShowCheckout(false)}
                 >
-                  Cancel
+                  Batal
                 </Button>
                 <Button
                   className="flex-1"
@@ -471,7 +432,7 @@ export default function CartPage() {
                     !formData.postalCode
                   }
                 >
-                  Place Order
+                  Konfirmasi Pesanan
                 </Button>
               </div>
             </div>
@@ -485,17 +446,24 @@ export default function CartPage() {
               <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
                 <CheckCircle2 className="h-8 w-8 text-green-600" />
               </div>
-              <DialogTitle className="text-2xl mb-2">Order Placed!</DialogTitle>
+              <DialogTitle className="text-2xl mb-2">Pesanan Berhasil!</DialogTitle>
               <DialogDescription className="text-base">
-                Your order has been successfully placed. We'll send you a confirmation email shortly.
+                Pesananmu sudah tercatat. Transaksi otomatis dicatat di Donating Calendar!
               </DialogDescription>
               <div className="mt-6 p-4 bg-muted rounded-lg">
-                <p className="text-sm font-medium mb-1">Order Total</p>
+                <p className="text-sm font-medium mb-1">Total Pesanan</p>
                 <p className="text-2xl font-bold text-primary">{formatPrice(total)}</p>
               </div>
-              <Button className="w-full mt-6" onClick={() => setShowSuccess(false)}>
-                Continue Shopping
-              </Button>
+              <div className="flex gap-3 mt-6">
+                <Link href="/calendar" className="flex-1">
+                  <Button variant="outline" className="w-full">
+                    Lihat Calendar
+                  </Button>
+                </Link>
+                <Button className="flex-1" onClick={() => setShowSuccess(false)}>
+                  Lanjut Belanja
+                </Button>
+              </div>
             </div>
           </DialogContent>
         </Dialog>

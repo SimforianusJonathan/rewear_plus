@@ -16,8 +16,8 @@ export default function DonatePage() {
     <div className="min-h-screen">
       {/* Hero */}
       <section className="bg-primary/5 border-b">
-        <div className="container px-4 py-12 md:py-16">
-          <div className="max-w-2xl">
+        <div className="container max-w-7xl mx-auto px-4 py-12 md:py-16">
+          <div className="max-w-2xl mx-auto">
             <h1 className="text-3xl md:text-4xl font-bold mb-4">Donation Hub</h1>
             <p className="text-lg text-muted-foreground">
               Make a real impact. Donate clothes directly to those in need or contribute to our community fund through
@@ -27,7 +27,7 @@ export default function DonatePage() {
         </div>
       </section>
 
-      <div className="container px-4 py-8">
+      <div className="container max-w-7xl mx-auto px-4 py-8">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">

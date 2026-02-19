@@ -4,15 +4,17 @@ import { Plus_Jakarta_Sans, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { Toaster } from "@/components/ui/toaster"
 import { Navbar } from "@/components/navbar"
+import { DemoUserBanner } from "@/components/demo-user-banner"
 import "./globals.css"
 
 const plusJakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-sans" })
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
 export const metadata: Metadata = {
-  title: "ReWear+ -Sustainable fashion marketplace",
-  description: "Sustainable fashion marketplace. Thrift, donate, and make an impact with pre-loved clothes.",
-  generator: 'v0.app'
+  title: "ReWear+ - Sustainable Fashion Marketplace",
+  description:
+    "Sustainable fashion marketplace. Thrift, donate, and make an impact with pre-loved clothes.",
+  generator: "v0.app",
 }
 
 export default function RootLayout({
@@ -23,6 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${plusJakarta.variable} ${geistMono.variable} font-sans antialiased`}>
+        <DemoUserBanner />
         <Navbar />
         <main className="min-h-screen">{children}</main>
         <Toaster />
