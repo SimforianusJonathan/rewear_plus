@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { EventCard } from "@/components/event-card"
 import { DonationFundWidget } from "@/components/donation-fund-widget"
 import { mockEvents, mockDonationFund, mockImpactLogs, formatPrice } from "@/lib/mock-data"
-import { Sparkles, HandHeart, ArrowRight, TrendingUp } from "lucide-react"
+import { Sparkles, HandHeart, ArrowRight, TrendingUp, HelpCircle } from "lucide-react"
 
 export default function DonatePage() {
   const activeEvents = mockEvents.filter((e) => !e.distributed)
@@ -14,65 +14,83 @@ export default function DonatePage() {
 
   return (
     <div className="min-h-screen">
-      {/* Hero */}
       <section className="bg-primary/5 border-b">
         <div className="container max-w-7xl mx-auto px-4 py-12 md:py-16">
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-3xl">
             <h1 className="text-3xl md:text-4xl font-bold mb-4">Donation Hub</h1>
             <p className="text-lg text-muted-foreground">
-              Make a real impact. Donate clothes directly to those in need or contribute to our community fund through
-              DoWear+.
+              Pilih jenis donasi yang sesuai: kirim pakaian langsung ke penerima (DoWear) atau donasikan untuk dijual dan
+              hasilnya masuk ke dana komunitas (DoWear+).
             </p>
           </div>
         </div>
       </section>
 
-      <div className="container max-w-7xl mx-auto px-4 py-8">
+      <div className="container max-w-7xl mx-auto px-4 py-8 space-y-8">
+        <div className="grid md:grid-cols-3 gap-4">
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-sm text-muted-foreground">Campaign aktif</p>
+              <p className="text-3xl font-bold">{activeEvents.length}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-sm text-muted-foreground">Dana terkumpul</p>
+              <p className="text-3xl font-bold">{formatPrice(mockDonationFund.total)}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-sm text-muted-foreground">Target dana</p>
+              <p className="text-3xl font-bold">{formatPrice(mockDonationFund.goal)}</p>
+            </CardContent>
+          </Card>
+        </div>
+
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Donation Options */}
             <div className="grid md:grid-cols-2 gap-4">
-              <Card className="border-dowear/30 hover:border-dowear transition-colors">
+              <Card className="border-dowear/30">
                 <CardHeader>
                   <div className="h-12 w-12 rounded-full bg-dowear/10 flex items-center justify-center mb-2">
                     <HandHeart className="h-6 w-6 text-dowear" />
                   </div>
-                  <CardTitle>DoWear</CardTitle>
-                  <CardDescription>Donate physical clothes directly to those in need</CardDescription>
+                  <CardTitle>DoWear (Donasi Langsung)</CardTitle>
+                  <CardDescription>Pakaian kamu dikirim langsung ke penerima manfaat.</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <ul className="text-sm text-muted-foreground space-y-2 mb-4">
-                    <li>• Items go directly to beneficiaries</li>
-                    <li>• You pay for shipping</li>
-                    <li>• Track your donation journey</li>
+                <CardContent className="space-y-4">
+                  <ul className="text-sm text-muted-foreground space-y-2">
+                    <li>• Cocok untuk donasi cepat dan tepat sasaran</li>
+                    <li>• Donatur menanggung biaya pengiriman</li>
+                    <li>• Status donasi bisa dipantau di profile</li>
                   </ul>
                   <Link href="/sell">
                     <Button className="w-full bg-dowear hover:bg-dowear/90 text-dowear-foreground">
-                      Donate Now
+                      Donasi Sekarang
                       <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
                   </Link>
                 </CardContent>
               </Card>
 
-              <Card className="border-dowear-plus/30 hover:border-dowear-plus transition-colors">
+              <Card className="border-dowear-plus/30">
                 <CardHeader>
                   <div className="h-12 w-12 rounded-full bg-dowear-plus/10 flex items-center justify-center mb-2">
                     <Sparkles className="h-6 w-6 text-dowear-plus-foreground" />
                   </div>
-                  <CardTitle>DoWear+</CardTitle>
-                  <CardDescription>Donate clothes to be sold, proceeds go to fund</CardDescription>
+                  <CardTitle>DoWear+ (Donasi ke Fund)</CardTitle>
+                  <CardDescription>Pakaian dijual oleh platform dan hasilnya 100% ke donation fund.</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <ul className="text-sm text-muted-foreground space-y-2 mb-4">
-                    <li>• Platform sells your items</li>
-                    <li>• 100% goes to Donation Fund</li>
-                    <li>• Supports charity events</li>
+                <CardContent className="space-y-4">
+                  <ul className="text-sm text-muted-foreground space-y-2">
+                    <li>• Cocok untuk bantu banyak campaign sekaligus</li>
+                    <li>• Harga ditetapkan admin untuk transparansi</li>
+                    <li>• Dana dipakai untuk event sosial komunitas</li>
                   </ul>
                   <Link href="/sell">
                     <Button className="w-full bg-dowear-plus hover:bg-dowear-plus/90 text-dowear-plus-foreground">
-                      Donate to Sell
+                      Donasi untuk Dijual
                       <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
                   </Link>
@@ -80,7 +98,27 @@ export default function DonatePage() {
               </Card>
             </div>
 
-            {/* Active Events */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Cara Donasi dalam 3 Langkah</CardTitle>
+                <CardDescription>Alur sederhana agar user baru cepat paham.</CardDescription>
+              </CardHeader>
+              <CardContent className="grid md:grid-cols-3 gap-4 text-sm">
+                <div className="p-4 rounded-lg border">
+                  <p className="font-semibold mb-1">1. Pilih Mode</p>
+                  <p className="text-muted-foreground">Pilih DoWear untuk donasi langsung atau DoWear+ untuk dukung fund.</p>
+                </div>
+                <div className="p-4 rounded-lg border">
+                  <p className="font-semibold mb-1">2. Upload Item</p>
+                  <p className="text-muted-foreground">Isi detail kondisi barang, ukuran, dan foto pakaian yang akan didonasikan.</p>
+                </div>
+                <div className="p-4 rounded-lg border">
+                  <p className="font-semibold mb-1">3. Pantau Impact</p>
+                  <p className="text-muted-foreground">Lihat update penyaluran/dana di profile dan log impact secara berkala.</p>
+                </div>
+              </CardContent>
+            </Card>
+
             <div>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold">Active Events</h2>
@@ -93,7 +131,6 @@ export default function DonatePage() {
               </div>
             </div>
 
-            {/* Completed Events */}
             {completedEvents.length > 0 && (
               <div>
                 <h2 className="text-xl font-bold mb-4">Completed Events</h2>
@@ -106,12 +143,9 @@ export default function DonatePage() {
             )}
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-6">
-            {/* Fund Dashboard */}
             <DonationFundWidget fund={mockDonationFund} />
 
-            {/* Impact Log */}
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg flex items-center gap-2">
@@ -122,40 +156,33 @@ export default function DonatePage() {
               <CardContent>
                 <div className="space-y-4">
                   {mockImpactLogs.slice(0, 4).map((log) => (
-                    <div key={log.id} className="flex gap-3">
-                      <div className="flex flex-col items-center">
-                        <div className="h-2 w-2 rounded-full bg-primary mt-2" />
-                        <div className="w-px h-full bg-border" />
-                      </div>
-                      <div className="pb-4">
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(log.date).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
-                        </p>
-                        <p className="text-sm font-medium">{log.title}</p>
-                        <p className="text-xs text-muted-foreground">{log.description}</p>
-                        {log.amount && (
-                          <p className="text-xs text-primary mt-1">Fund used: {formatPrice(log.amount)}</p>
-                        )}
-                      </div>
+                    <div key={log.id} className="pb-3 border-b last:border-b-0 last:pb-0">
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(log.date).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
+                      </p>
+                      <p className="text-sm font-medium">{log.title}</p>
+                      <p className="text-xs text-muted-foreground">{log.description}</p>
+                      {log.amount && <p className="text-xs text-primary mt-1">Dana terpakai: {formatPrice(log.amount)}</p>}
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Quick Stats */}
             <Card>
-              <CardContent className="p-4">
-                <div className="grid grid-cols-2 gap-4 text-center">
-                  <div className="p-3 rounded-lg bg-muted">
-                    <p className="text-2xl font-bold text-primary">1,250+</p>
-                    <p className="text-xs text-muted-foreground">Items Donated</p>
-                  </div>
-                  <div className="p-3 rounded-lg bg-muted">
-                    <p className="text-2xl font-bold text-primary">3,400+</p>
-                    <p className="text-xs text-muted-foreground">People Helped</p>
-                  </div>
-                </div>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <HelpCircle className="h-4 w-4" />
+                  Masih bingung mulai dari mana?
+                </CardTitle>
+                <CardDescription>Lihat FAQ untuk penjelasan fitur, role, dan alur transaksi.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Link href="/faq">
+                  <Button variant="outline" className="w-full bg-transparent">
+                    Buka FAQ
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </div>

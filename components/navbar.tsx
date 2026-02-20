@@ -19,6 +19,7 @@ import {
   ShoppingCart,
   MessageSquare,
   CalendarDays,
+  HelpCircle,
 } from "lucide-react"
 import { useCart } from "@/hooks/use-cart"
 import { useChat } from "@/hooks/use-chat"
@@ -33,6 +34,7 @@ const navItems = [
   { href: "/calendar", label: "Calendar", icon: CalendarDays },
   { href: "/sell", label: "Sell", icon: PlusCircle },
   { href: "/donate", label: "Donate", icon: Heart },
+  { href: "/faq", label: "FAQ", icon: HelpCircle },
   { href: "/profile", label: "Profile", icon: User },
   { href: "/admin", label: "Admin", icon: Settings },
 ]
@@ -45,6 +47,8 @@ export function Navbar() {
   const { currentUser } = useDemoUser()
   const { cartCount } = useCart()
   const { totalUnread } = useChat(currentUser.id)
+
+  const visibleNavItems = navItems.filter((item) => item.href !== "/admin" || currentUser.role === "admin")
 
   useEffect(() => {
     initStorage()
@@ -72,7 +76,7 @@ export function Navbar() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1">
-          {navItems.map((item) => {
+          {visibleNavItems.map((item) => {
             const isCart = item.href === "/cart"
             const isChat = item.href === "/chat"
             const badge = isCart
@@ -121,7 +125,7 @@ export function Navbar() {
           </SheetTrigger>
           <SheetContent side="right" className="w-72">
             <div className="flex flex-col gap-4 mt-8">
-              {navItems.map((item) => {
+              {visibleNavItems.map((item) => {
                 const isCart = item.href === "/cart"
                 const isChat = item.href === "/chat"
                 const badge = isCart

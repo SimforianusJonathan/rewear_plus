@@ -26,6 +26,7 @@ import {
   Clock,
   PackageX,
   Star,
+  HelpCircle,
 } from "lucide-react"
 import type { WishlistItem } from "@/lib/types"
 
@@ -251,6 +252,9 @@ export default function ProfilePage() {
               <h1 className="text-2xl font-bold mb-1">{currentUser.name}</h1>
               <p className="text-muted-foreground mb-3">{currentUser.email}</p>
               <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
+                <Badge variant="outline" className="capitalize">
+                  {currentUser.role}
+                </Badge>
                 {currentUser.badges.map((badge) => (
                   <Badge key={badge} variant="secondary" className="bg-primary/10 text-primary">
                     <Award className="h-3 w-3 mr-1" />
@@ -279,6 +283,35 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <Card>
+          <CardContent className="p-4">
+            <p className="text-xs text-muted-foreground">Total pembelian</p>
+            <p className="text-2xl font-bold">{mockPurchases.length}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <p className="text-xs text-muted-foreground">Total donasi</p>
+            <p className="text-2xl font-bold">{mockDonations.length}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <p className="text-xs text-muted-foreground">Wishlist aktif</p>
+            <p className="text-2xl font-bold">{wishlistItems.length}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <p className="text-xs text-muted-foreground">Kontribusi ke fund</p>
+            <p className="text-2xl font-bold text-primary">
+              {formatPrice(mockPurchases.reduce((sum, p) => sum + p.total * 0.07, 0))}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Main Content */}
         <div className="lg:col-span-2">
@@ -286,7 +319,7 @@ export default function ProfilePage() {
             <TabsList className="w-full justify-start mb-6 flex-wrap h-auto">
               <TabsTrigger value="purchases" className="flex items-center gap-2">
                 <ShoppingBag className="h-4 w-4" />
-                Purchases
+                Pembelian
               </TabsTrigger>
               <TabsTrigger value="wishlist" className="flex items-center gap-2 relative">
                 <Heart className="h-4 w-4" />
@@ -299,11 +332,11 @@ export default function ProfilePage() {
               </TabsTrigger>
               <TabsTrigger value="physical" className="flex items-center gap-2">
                 <Heart className="h-4 w-4" />
-                DoWear
+                Donasi DoWear
               </TabsTrigger>
               <TabsTrigger value="fund" className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4" />
-                DoWear+
+                Donasi DoWear+
               </TabsTrigger>
             </TabsList>
 
@@ -315,8 +348,8 @@ export default function ProfilePage() {
               ) : (
                 <EmptyState
                   icon={PackageX}
-                  title="No purchases yet"
-                  description="Start shopping to see your purchase history here."
+                  title="Belum ada pembelian"
+                  description="Mulai belanja untuk melihat riwayat pembelian di sini."
                 />
               )}
             </TabsContent>
@@ -341,8 +374,8 @@ export default function ProfilePage() {
               ) : (
                 <EmptyState
                   icon={Heart}
-                  title="No physical donations yet"
-                  description="Donate clothes through DoWear to help those in need."
+                  title="Belum ada donasi DoWear"
+                  description="Donasi pakaian lewat DoWear untuk membantu penerima manfaat."
                 />
               )}
             </TabsContent>
@@ -355,8 +388,8 @@ export default function ProfilePage() {
               ) : (
                 <EmptyState
                   icon={Sparkles}
-                  title="No fund donations yet"
-                  description="Donate items through DoWear+ to support our community fund."
+                  title="Belum ada donasi DoWear+"
+                  description="Donasi lewat DoWear+ untuk mendukung donation fund komunitas."
                 />
               )}
             </TabsContent>
@@ -370,7 +403,7 @@ export default function ProfilePage() {
           {/* Impact Summary */}
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Your Impact</CardTitle>
+              <CardTitle className="text-lg">Ringkasan Dampak</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -399,7 +432,7 @@ export default function ProfilePage() {
           {/* Quick Links */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-base">Quick Links</CardTitle>
+              <CardTitle className="text-base">Akses Cepat</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               <Link href="/calendar">
@@ -412,6 +445,12 @@ export default function ProfilePage() {
                 <Button variant="outline" className="w-full justify-start gap-2">
                   <Star className="h-4 w-4" />
                   My Conversations
+                </Button>
+              </Link>
+              <Link href="/faq">
+                <Button variant="outline" className="w-full justify-start gap-2">
+                  <HelpCircle className="h-4 w-4" />
+                  Bantuan & FAQ
                 </Button>
               </Link>
             </CardContent>

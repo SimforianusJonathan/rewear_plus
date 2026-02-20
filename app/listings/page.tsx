@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Badge } from "@/components/ui/badge"
 import { ProductCard } from "@/components/product-card"
 import { EmptyState } from "@/components/empty-state"
 import {
@@ -95,12 +96,20 @@ function ListingsContent() {
   }
 
   const hasActiveFilters =
+    searchQuery.trim().length > 0 ||
     selectedCategories.length > 0 ||
     selectedConditions.length > 0 ||
     selectedSizes.length > 0 ||
     selectedModes.length > 0 ||
     priceRange[0] > 0 ||
     priceRange[1] < 100000
+
+  const activeFiltersCount =
+    selectedCategories.length +
+    selectedConditions.length +
+    selectedSizes.length +
+    selectedModes.length +
+    (searchQuery.trim().length > 0 ? 1 : 0)
 
   const FilterContent = () => (
     <div className="space-y-6">
@@ -237,9 +246,31 @@ function ListingsContent() {
   return (
     <div className="container max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-8 rounded-2xl border bg-card/80 p-6">
         <h1 className="text-3xl font-bold mb-2">Browse Listings</h1>
         <p className="text-muted-foreground">Find your next sustainable fashion piece</p>
+        <div className="flex flex-wrap gap-2 mt-4">
+          {modes.map((mode) => {
+            const active = selectedModes.includes(mode.value)
+            return (
+              <Button
+                key={mode.value}
+                variant={active ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  if (active) {
+                    setSelectedModes(selectedModes.filter((m) => m !== mode.value))
+                  } else {
+                    setSelectedModes([...selectedModes, mode.value])
+                  }
+                  setCurrentPage(1)
+                }}
+              >
+                {mode.label}
+              </Button>
+            )
+          })}
+        </div>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
@@ -294,10 +325,7 @@ function ListingsContent() {
                     Filters
                     {hasActiveFilters && (
                       <span className="ml-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
-                        {selectedCategories.length +
-                          selectedConditions.length +
-                          selectedSizes.length +
-                          selectedModes.length}
+                        {activeFiltersCount}
                       </span>
                     )}
                   </Button>
@@ -313,6 +341,26 @@ function ListingsContent() {
               </Sheet>
             </div>
           </div>
+
+          {hasActiveFilters && (
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <span className="text-xs text-muted-foreground">Active:</span>
+              {searchQuery.trim().length > 0 && <Badge variant="secondary">Search: {searchQuery}</Badge>}
+              {selectedModes.map((mode) => (
+                <Badge key={mode} variant="secondary">
+                  {modes.find((m) => m.value === mode)?.label}
+                </Badge>
+              ))}
+              {selectedCategories.map((category) => (
+                <Badge key={category} variant="secondary">
+                  {categories.find((item) => item.value === category)?.label}
+                </Badge>
+              ))}
+              <Button variant="ghost" size="sm" onClick={clearFilters}>
+                Clear all
+              </Button>
+            </div>
+          )}
 
           {/* Results Count */}
           <p className="text-sm text-muted-foreground mb-4">{filteredProducts.length} items found</p>

@@ -64,6 +64,15 @@ export const DEMO_USERS: DemoUser[] = [
     badges: ["Trusted Seller"],
     joinedAt: "2025-09-10",
   },
+  {
+    id: "u4",
+    name: "Rina Pratama",
+    email: "admin@rewear.com",
+    avatar: "/placeholder.svg",
+    role: "admin",
+    badges: ["Platform Admin"],
+    joinedAt: "2025-01-01",
+  },
 ]
 
 function seedData(): void {

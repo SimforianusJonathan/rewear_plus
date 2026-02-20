@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
+import Link from "next/link"
 import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -25,6 +26,7 @@ import {
 } from "@/components/ui/dialog"
 import { ModeBadge } from "@/components/mode-badge"
 import { useToast } from "@/hooks/use-toast"
+import { useDemoUser } from "@/hooks/use-demo-user"
 import { mockPendingListings, mockEvents, formatPrice } from "@/lib/mock-data"
 import {
   CheckCircle2,
@@ -36,6 +38,7 @@ import {
   PlusCircle,
   AlertTriangle,
   Heart,
+  ShieldAlert,
 } from "lucide-react"
 
 export default function AdminPage() {
@@ -43,6 +46,33 @@ export default function AdminPage() {
   const [events, setEvents] = useState(mockEvents)
   const [priceInputs, setPriceInputs] = useState<Record<string, number>>({})
   const { toast } = useToast()
+  const { currentUser } = useDemoUser()
+
+  if (currentUser.role !== "admin") {
+    return (
+      <div className="container max-w-3xl mx-auto px-4 py-12">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ShieldAlert className="h-5 w-5 text-destructive" />
+              Akses ditolak
+            </CardTitle>
+            <CardDescription>Halaman admin hanya bisa diakses oleh user dengan role admin.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col sm:flex-row gap-3">
+            <Link href="/" className="w-full sm:w-auto">
+              <Button className="w-full">Kembali ke Home</Button>
+            </Link>
+            <Link href="/profile" className="w-full sm:w-auto">
+              <Button variant="outline" className="w-full bg-transparent">
+                Lihat Profil Saya
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   const handleApprove = (id: string) => {
     setPendingListings((prev) => prev.filter((p) => p.id !== id))
