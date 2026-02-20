@@ -22,6 +22,46 @@ export interface Product {
   fundDestination?: "disaster" | "education" | "general"
 }
 
+export interface Foundation {
+  id: string
+  name: string
+  type: "NGO" | "Yayasan" | "Community"
+  description: string
+  registerNumber: string
+  address: string
+  contact: {
+    phone: string
+    email: string
+    website?: string
+  }
+  verified: boolean
+  activePrograms: number
+  totalBeneficiaries: number
+  logo?: string
+}
+
+export interface Beneficiary {
+  id: string
+  name: string
+  location: string
+  category: "disaster-victims" | "students" | "orphanage" | "elderly" | "community"
+  count: number
+  foundationId: string
+}
+
+export interface DistributionReport {
+  id: string
+  eventId: string
+  date: string
+  foundationId: string
+  beneficiaryId: string
+  itemsDistributed: number
+  amountUsed: number
+  photos: string[]
+  description: string
+  recipients: string
+}
+
 export interface DonationEvent {
   id: string
   title: string
@@ -34,6 +74,9 @@ export interface DonationEvent {
   endDate: string
   needs: string[]
   distributed: boolean
+  foundationId: string
+  beneficiaryIds: string[]
+  distributionReports: string[]
 }
 
 export interface DonationFund {
@@ -49,6 +92,10 @@ export interface ImpactLog {
   title: string
   description: string
   amount?: number
+  foundationId?: string
+  beneficiaryId?: string
+  itemCount?: number
+  verified: boolean
 }
 
 export interface User {
@@ -211,6 +258,144 @@ export const mockProducts: Product[] = [
   },
 ]
 
+export const mockFoundations: Foundation[] = [
+  {
+    id: "f1",
+    name: "Yayasan Peduli Bencana Indonesia",
+    type: "Yayasan",
+    description: "Yayasan yang fokus pada penanganan darurat bencana alam dan rehabilitasi korban bencana di seluruh Indonesia.",
+    registerNumber: "AHU-0012345.AH.01.04.Tahun 2020",
+    address: "Jl. Merdeka No. 45, Jakarta Pusat 10110",
+    contact: {
+      phone: "+62-21-3456789",
+      email: "info@pedulibencana.org",
+      website: "https://pedulibencana.org",
+    },
+    verified: true,
+    activePrograms: 8,
+    totalBeneficiaries: 2400,
+  },
+  {
+    id: "f2",
+    name: "Yayasan Pendidikan Harapan",
+    type: "Yayasan",
+    description: "Berfokus pada pendidikan anak kurang mampu melalui beasiswa, seragam, dan perlengkapan sekolah.",
+    registerNumber: "AHU-0023456.AH.01.04.Tahun 2018",
+    address: "Jl. Pendidikan Raya No. 12, Bandung 40132",
+    contact: {
+      phone: "+62-22-7654321",
+      email: "kontak@harapan.edu",
+      website: "https://harapan.edu",
+    },
+    verified: true,
+    activePrograms: 5,
+    totalBeneficiaries: 850,
+  },
+  {
+    id: "f3",
+    name: "Rumah Yatim Indonesia",
+    type: "Yayasan",
+    description: "Jaringan panti asuhan yang menyediakan tempat tinggal, pendidikan, dan kebutuhan dasar anak yatim piatu.",
+    registerNumber: "AHU-0034567.AH.01.04.Tahun 2015",
+    address: "Jl. Kasih Sayang No. 88, Jakarta Selatan 12160",
+    contact: {
+      phone: "+62-21-8765432",
+      email: "info@rumahyatim.or.id",
+      website: "https://rumahyatim.or.id",
+    },
+    verified: true,
+    activePrograms: 12,
+    totalBeneficiaries: 560,
+  },
+]
+
+export const mockBeneficiaries: Beneficiary[] = [
+  {
+    id: "b1",
+    name: "Korban Banjir Desa Sukamaju, Purwakarta",
+    location: "Desa Sukamaju, Kec. Wanayasa, Purwakarta, Jawa Barat",
+    category: "disaster-victims",
+    count: 120,
+    foundationId: "f1",
+  },
+  {
+    id: "b2",
+    name: "Korban Banjir Desa Karangasem, Semarang",
+    location: "Desa Karangasem, Kec. Gunungpati, Semarang, Jawa Tengah",
+    category: "disaster-victims",
+    count: 85,
+    foundationId: "f1",
+  },
+  {
+    id: "b3",
+    name: "Korban Banjir Desa Sumber Rejo, Kendal",
+    location: "Desa Sumber Rejo, Kec. Boja, Kendal, Jawa Tengah",
+    category: "disaster-victims",
+    count: 45,
+    foundationId: "f1",
+  },
+  {
+    id: "b4",
+    name: "SDN Harapan Bangsa 01, Bandung",
+    location: "Jl. Cibaduyut No. 15, Bandung, Jawa Barat",
+    category: "students",
+    count: 45,
+    foundationId: "f2",
+  },
+  {
+    id: "b5",
+    name: "SDN Ceria 03, Cimahi",
+    location: "Jl. Raya Cimahi No. 78, Cimahi, Jawa Barat",
+    category: "students",
+    count: 55,
+    foundationId: "f2",
+  },
+  {
+    id: "b6",
+    name: "Panti Asuhan Kasih Ibu, Jakarta Selatan",
+    location: "Jl. Pasar Minggu No. 24, Jakarta Selatan",
+    category: "orphanage",
+    count: 32,
+    foundationId: "f3",
+  },
+  {
+    id: "b7",
+    name: "Panti Asuhan Cahaya Harapan, Jakarta Timur",
+    location: "Jl. Matraman Raya No. 56, Jakarta Timur",
+    category: "orphanage",
+    count: 28,
+    foundationId: "f3",
+  },
+]
+
+export const mockDistributionReports: DistributionReport[] = [
+  {
+    id: "dr1",
+    eventId: "3",
+    date: "2026-01-20",
+    foundationId: "f3",
+    beneficiaryId: "b6",
+    itemsDistributed: 85,
+    amountUsed: 600000,
+    photos: ["/distribution-orphanage-jakarta.jpg"],
+    description: "Distribusi pakaian sehari-hari dan seragam sekolah untuk 32 anak di Panti Asuhan Kasih Ibu.",
+    recipients: "32 anak usia 6-17 tahun",
+  },
+  {
+    id: "dr2",
+    eventId: "3",
+    date: "2026-01-22",
+    foundationId: "f3",
+    beneficiaryId: "b7",
+    beneficiaryId: "b7",
+    itemsDistributed: 72,
+    amountUsed: 520000,
+    photos: ["/distribution-orphanage-east-jakarta.jpg"],
+    description: "Paket pakaian dan sepatu untuk 28 anak di Panti Asuhan Cahaya Harapan.",
+    recipients: "28 anak usia 5-16 tahun",
+  },
+]
+
 export const mockEvents: DonationEvent[] = [
   {
     id: "1",
@@ -224,6 +409,9 @@ export const mockEvents: DonationEvent[] = [
     endDate: "2026-02-28",
     needs: ["Warm clothes", "Children's wear", "Rain gear", "Blankets"],
     distributed: false,
+    foundationId: "f1",
+    beneficiaryIds: ["b1", "b2", "b3"],
+    distributionReports: [],
   },
   {
     id: "2",
@@ -237,6 +425,9 @@ export const mockEvents: DonationEvent[] = [
     endDate: "2026-03-15",
     needs: ["School uniforms", "White shirts", "Sports attire"],
     distributed: false,
+    foundationId: "f2",
+    beneficiaryIds: ["b4", "b5"],
+    distributionReports: [],
   },
   {
     id: "3",
@@ -250,6 +441,9 @@ export const mockEvents: DonationEvent[] = [
     endDate: "2026-01-31",
     needs: ["Casual wear", "Sleepwear", "Shoes"],
     distributed: true,
+    foundationId: "f3",
+    beneficiaryIds: ["b6", "b7"],
+    distributionReports: ["dr1", "dr2"],
   },
 ]
 
@@ -267,6 +461,10 @@ export const mockImpactLogs: ImpactLog[] = [
     title: "Clothing distributed to flood victims",
     description: "250 pieces of clothing distributed to 3 villages in Central Java",
     amount: 1500000,
+    foundationId: "f1",
+    beneficiaryId: "b1",
+    itemCount: 250,
+    verified: true,
   },
   {
     id: "2",
@@ -274,6 +472,10 @@ export const mockImpactLogs: ImpactLog[] = [
     title: "School uniforms delivered",
     description: "100 school uniforms delivered to Yayasan Pendidikan Harapan",
     amount: 800000,
+    foundationId: "f2",
+    beneficiaryId: "b4",
+    itemCount: 100,
+    verified: true,
   },
   {
     id: "3",
@@ -281,6 +483,9 @@ export const mockImpactLogs: ImpactLog[] = [
     title: "Winter clothing drive completed",
     description: "Successfully collected and distributed winter clothing for mountain communities",
     amount: 1200000,
+    foundationId: "f1",
+    itemCount: 180,
+    verified: true,
   },
   {
     id: "4",
@@ -288,6 +493,10 @@ export const mockImpactLogs: ImpactLog[] = [
     title: "Orphanage monthly donation",
     description: "Monthly clothing package delivered to 5 orphanages in Jakarta",
     amount: 600000,
+    foundationId: "f3",
+    beneficiaryId: "b6",
+    itemCount: 150,
+    verified: true,
   },
 ]
 

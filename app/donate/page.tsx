@@ -3,10 +3,17 @@
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { EventCard } from "@/components/event-card"
 import { DonationFundWidget } from "@/components/donation-fund-widget"
-import { mockEvents, mockDonationFund, mockImpactLogs, formatPrice } from "@/lib/mock-data"
-import { Sparkles, HandHeart, ArrowRight, TrendingUp, HelpCircle } from "lucide-react"
+import {
+  mockEvents,
+  mockDonationFund,
+  mockImpactLogs,
+  mockFoundations,
+  formatPrice,
+} from "@/lib/mock-data"
+import { Sparkles, HandHeart, ArrowRight, TrendingUp, HelpCircle, Shield, CheckCircle2 } from "lucide-react"
 
 export default function DonatePage() {
   const activeEvents = mockEvents.filter((e) => !e.distributed)
@@ -119,6 +126,47 @@ export default function DonatePage() {
               </CardContent>
             </Card>
 
+            {/* Transparency Section */}
+            <Card className="border-primary/20 bg-primary/5">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5 text-primary" />
+                  Yayasan Mitra Terpercaya
+                </CardTitle>
+                <CardDescription>
+                  Semua donasi disalurkan melalui yayasan resmi yang sudah terverifikasi dan memiliki izin operasional.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {mockFoundations.map((foundation) => (
+                  <div key={foundation.id} className="p-4 rounded-lg border bg-background space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-semibold">{foundation.name}</p>
+                          {foundation.verified && (
+                            <Badge className="bg-green-100 text-green-700 border-green-300 h-5">
+                              <CheckCircle2 className="h-3 w-3 mr-1" /> Verified
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground line-clamp-2">{foundation.description}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground pt-2 border-t">
+                      <span>{foundation.activePrograms} program aktif</span>
+                      <span>•</span>
+                      <span>{foundation.totalBeneficiaries.toLocaleString()} penerima manfaat</span>
+                    </div>
+                  </div>
+                ))}
+                <p className="text-xs text-muted-foreground pt-2">
+                  Setiap event/campaign menampilkan detail yayasan penyalur, lokasi penerima, dan laporan distribusi dengan
+                  foto bukti.
+                </p>
+              </CardContent>
+            </Card>
+
             <div>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold">Active Events</h2>
@@ -155,16 +203,39 @@ export default function DonatePage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {mockImpactLogs.slice(0, 4).map((log) => (
-                    <div key={log.id} className="pb-3 border-b last:border-b-0 last:pb-0">
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(log.date).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
-                      </p>
-                      <p className="text-sm font-medium">{log.title}</p>
-                      <p className="text-xs text-muted-foreground">{log.description}</p>
-                      {log.amount && <p className="text-xs text-primary mt-1">Dana terpakai: {formatPrice(log.amount)}</p>}
-                    </div>
-                  ))}
+                  {mockImpactLogs.slice(0, 4).map((log) => {
+                    const foundation = log.foundationId
+                      ? mockFoundations.find((f) => f.id === log.foundationId)
+                      : null
+                    return (
+                      <div key={log.id} className="pb-3 border-b last:border-b-0 last:pb-0">
+                        <div className="flex items-start justify-between gap-2 mb-1">
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(log.date).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
+                          </p>
+                          {log.verified && (
+                            <Badge className="bg-green-100 text-green-700 border-green-300 h-5">
+                              <CheckCircle2 className="h-3 w-3" />
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-sm font-medium">{log.title}</p>
+                        <p className="text-xs text-muted-foreground">{log.description}</p>
+                        {log.itemCount && (
+                          <p className="text-xs text-muted-foreground mt-1">📦 {log.itemCount} items</p>
+                        )}
+                        {log.amount && (
+                          <p className="text-xs text-primary mt-1">Dana terpakai: {formatPrice(log.amount)}</p>
+                        )}
+                        {foundation && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            <Shield className="h-3 w-3 inline mr-1" />
+                            {foundation.name}
+                          </p>
+                        )}
+                      </div>
+                    )
+                  })}
                 </div>
               </CardContent>
             </Card>
